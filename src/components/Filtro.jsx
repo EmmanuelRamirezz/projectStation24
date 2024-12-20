@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Contenido from "./Contenido";
 const Filtro = () => {
   const selects = [
     {
@@ -31,6 +32,7 @@ const Filtro = () => {
   const [query, setQuery] = useState(""); // Estado para el texto del input
   const [videos, setVideos] = useState([]); // Estado para los resultados de la búsqueda
   const apiKey = "JvXbikst4froBxzCJ2pLi1KrJkYIJ25M6XmzNyDumws2pUaNnolCrPTt"; // Reemplaza con tu clave de API de Pexels
+  const [videosSeleccionados, setVideosSeleccionados] = [];
 
   const fetchVideos = async () => {
     if (!query) return; // No hacer nada si el input está vacío
@@ -107,7 +109,7 @@ const Filtro = () => {
             Limpiar
           </button>
         </div>
-
+    
         {/* Resultados */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {videos.map((video) => (
@@ -121,6 +123,9 @@ const Filtro = () => {
             </div>
           ))}
         </div>
+      </div>
+      <div>
+          <Contenido videosSeleccionados = {videosSeleccionados}/>
       </div>
     </>
   );

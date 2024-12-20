@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TvIcon, SquaresPlusIcon, Squares2X2Icon, InformationCircleIcon } from '@heroicons/react/24/solid'
 import contenido from '../assets/contenido.png'
-const Contenido = () => {
+const Contenido = (props) => {
 
   //modal1
   const [isOpen1, setIsOpen1] = useState(false);
@@ -56,10 +56,10 @@ const Contenido = () => {
         <h2 className="text-white font-serif text-xl font-stationFont font-extrabold italic mx-auto my-5 text-center">
           Seleccione una pantalla y un contenido para ser aplicado
         </h2>
-        <div></div>
-        <div className="flex justify-center">
+        {/* imagen de ejemplo */}
+        {/* <div className="flex justify-center">
           <img src={contenido} height={200} width={800} alt="logo" />
-        </div>
+        </div> */}
         <div className="flex justify-center mt-10">
           {buttons.map((button) => (
             <button
