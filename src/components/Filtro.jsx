@@ -32,7 +32,20 @@ const Filtro = () => {
   const [query, setQuery] = useState(""); // Estado para el texto del input
   const [videos, setVideos] = useState([]); // Estado para los resultados de la búsqueda
   const apiKey = "JvXbikst4froBxzCJ2pLi1KrJkYIJ25M6XmzNyDumws2pUaNnolCrPTt"; // Reemplaza con tu clave de API de Pexels
-  const [videosSeleccionados, setVideosSeleccionados] = [];
+  const [videosSeleccionados, setVideosSeleccionados] = useState([]);
+
+  //select de videos
+  const manejarCambio = (video, isChecked) => {
+    if (isChecked) {
+      // Agregar el video si se selecciona
+      setVideosSeleccionados((prev) => [...prev, video]);
+    } else {
+      // Eliminar el video si se desmarca
+      setVideosSeleccionados((prev) =>
+        prev.filter((v) => v.id !== video.id)
+      );
+    }
+  };
 
   const fetchVideos = async () => {
     if (!query) return; // No hacer nada si el input está vacío
@@ -113,13 +126,16 @@ const Filtro = () => {
         {/* Resultados */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {videos.map((video) => (
-            <div key={video.id}className="border rounded overflow-hidden shadow">
-             <input type="checkbox" className="absolute w-5 h-5 z-10" id={video.id}/>
+            <div 
+            key={video.id}
+            className="border rounded overflow-hidden shadow border-2 border-white">
               <video
                 controls
                 className="w-full h-auto"
                 src={video.video_files[0]?.link}
               />
+              <p className="text-white">Autor: {video.user.name}</p>
+              <input type="checkbox" className="block mx-auto mb-2 w-6 h-6" id={video.id} onChange={(e) => manejarCambio(video, e.target.checked)}/>
             </div>
           ))}
         </div>

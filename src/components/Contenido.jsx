@@ -1,7 +1,43 @@
 import React, { useState } from 'react';
-import { TvIcon, SquaresPlusIcon, Squares2X2Icon, InformationCircleIcon } from '@heroicons/react/24/solid'
+import { TvIcon, SquaresPlusIcon, Squares2X2Icon, InformationCircleIcon, FilmIcon } from '@heroicons/react/24/solid'
 import contenido from '../assets/contenido.png'
 const Contenido = (props) => {
+  const [screensContent, setScreensContent] = useState([]);
+  
+  let ids = [];
+  if (props.videosSeleccionados.length !== 0) {
+    for (let i = 0; i < props.videosSeleccionados.length; i++) {
+      ids.push(props.videosSeleccionados[i].id);
+    }
+    console.log('IDs:', ids);
+  }
+    // Función para asignar contenido a una pantalla
+    const asign1 = () => {
+      setScreensContent((prev) => {
+        const updated = [...prev];
+        updated[0] = ids; // Asignar a screen1
+        return updated;
+      });
+      console.log('Pantalla 1 actualizada:', ids);
+    };
+    const asign2 = () => {
+      setScreensContent((prev) => {
+        const updated = [...prev];
+        updated[1] = ids; // Asignar a screen2
+        return updated;
+      });
+      console.log('Pantalla 2 actualizada:', ids);
+
+    };
+    const asign3 = () => {
+      setScreensContent((prev) => {
+        const updated = [...prev];
+        updated[2] = ids; // Asignar a screen3
+        return updated;
+      });
+      console.log('Pantalla 3 actualizada:', ids);
+    };
+console.log(screensContent);
 
   //modal1
   const [isOpen1, setIsOpen1] = useState(false);
@@ -15,6 +51,12 @@ const Contenido = (props) => {
   const [isOpen3, setIsOpen3] = useState(false);
   const openModal3 = () => setIsOpen3(true);
   const closeModal3 = () => setIsOpen3(false);
+  //modal4
+  const [isOpen4, setIsOpen4] = useState(false);
+  const openModal4 = () => setIsOpen4(true);fetchSelectedVideos();
+  const closeModal4 = () => setIsOpen4(false);
+
+  //botones
   const buttons = [
     {
       name: 'Asignar conenido',
@@ -31,26 +73,79 @@ const Contenido = (props) => {
       icon: <Squares2X2Icon className="size-6 text-white mx-auto mt-1" />,
       func: openModal3,
     },
+    {
+      name: 'Ver contenido',
+      icon: <FilmIcon className="size-6 text-white mx-auto mt-1" />,
+      func: openModal4,
+    },
   ];
+  //modal pantallas
   const screens = [
     {
       name: 'Pantalla 1',
-      icon: <TvIcon className="size-6 text-white mx-auto mt-1" />
+      icon: <TvIcon className="size-6 text-white mx-auto mt-1" />,
+      asign: asign1,
     },
     {
       name: 'Pantalla 2',
-      icon: <TvIcon className="size-6 text-white mx-auto mt-1" />
+      icon: <TvIcon className="size-6 text-white mx-auto mt-1" />,
+      asign: asign2,
     },
     {
       name: 'Pantalla 3',
-      icon: <TvIcon className="size-6 text-white mx-auto mt-1" />
+      icon: <TvIcon className="size-6 text-white mx-auto mt-1" />,
+      asign: asign3,
     }
   ];
+  //array de playlists
   const playlists = [
     { id: 1, name: 'Especial navidad', autor: 'Jorge', duration: '10:20', length: '4', created:'18/12/2024' },
     { id: 2, name: 'Spining', autor: 'Emmanuel ', duration: '33:15', length: '11', created:'13/11/2024' },
     { id: 3, name: 'Videos chidos', autor: 'Alejandro', duration: '5:03', length: '1', created:'07/02/2024' },
-  ];
+  ];  
+
+  //Consulta de API
+  let videos1 =[];
+  let videos2=[];
+  let videos3=[];
+
+  if (screensContent.length==0){
+    for (let i = 0; i < screensContent.length; i++) {
+      if (screensContent[0]!=[]) {
+        videos1='';
+      }
+      for (let j = 0; j < screensContent.length; j++) {
+        
+      }
+    }
+  }
+  const fetchSelectedVideos = async () => {
+
+    if (screensContent.length==0) return; // No hacer nada si el input está vacío
+
+    try {
+      const response = await fetch(
+        `https://api.pexels.com/videos/search?query=${query}&per_page=6&orientation=landscape&min_width=1280`,
+        {
+          headers: {
+            Authorization: apiKey,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error en la petición");
+      }
+
+      const data = await response.json();
+      console.log(data);
+      
+      setVideos(data.videos); // Guardar los resultados en el estado
+    } catch (error) {
+      console.error("Error al buscar videos:", error);
+    }
+
+  };
     return (
       <>
         <h2 className="text-white font-serif text-xl font-stationFont font-extrabold italic mx-auto my-5 text-center">
@@ -80,37 +175,29 @@ const Contenido = (props) => {
               <h2 className="text-xl font-bold mb-4 text-stationOrange">
                 Selecciona las pantallas a reproducir
               </h2>
-
-              <form className="space-y-4">
                 <div className="flex justify-evenly">
                   {screens.map((screen) => (
                     <button
                       key={screen.name}
                       type="radio"
                       className="text-white bg-stationOrange2 font-medium rounded-lg text-md px-5 py-2.5 me-2 mb-2 transition"
+                      onClick={screen.asign}
                     >
                       {screen.name}
                       {screen.icon}
                     </button>
                   ))}
                 </div>
-
-                <div className="flex justify-end space-x-4">
+                <div className="flex justify-center mt-20 space-x-4">
                   <button
                     type="button"
                     onClick={closeModal1}
                     className="text-white bg-stationOrange2 font-medium rounded-lg text-md px-5 py-2.5 me-2 mb-2 transition"
                   >
-                    Cancelar
+                    Cerrar
                   </button>
-                  <button
-                    type="submit"
-                    className="text-white bg-stationOrange2 font-medium rounded-lg text-md px-5 py-2.5 me-2 mb-2 transition"
-                  >
-                    Aplicar
-                  </button>
+
                 </div>
-              </form>
             </div>
           </div>
         )}
@@ -122,7 +209,7 @@ const Contenido = (props) => {
                 Nueva playlist de videos
               </h2>
 
-              <form className="space-y-4">
+              <form className="">
                 <div>
                   <label
                     htmlFor="name"
@@ -151,7 +238,7 @@ const Contenido = (props) => {
                   />
                 </div>
 
-                <div className="flex justify-end space-x-4">
+                <div className="flex justify-center mt-20 space-x-4">
                   <button
                     type="button"
                     onClick={closeModal2}
@@ -243,7 +330,7 @@ const Contenido = (props) => {
                   </tbody>
                 </table>
               </div>
-              <div className="flex justify-end space-x-4">
+              <div className="flex justify-center space-x-4">
                 <button
                   type="button"
                   onClick={closeModal3}
@@ -255,6 +342,80 @@ const Contenido = (props) => {
             </div>
           </div>
         )}
+        {/* Modal4 */}
+        {isOpen4 && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div className="bg-darkGray p-6 rounded-lg shadow-lg max-w-2xl w-full">
+          <h2 className="text-xl font-bold mb-4 text-stationOrange">
+            Contenido en reproducción
+          </h2>
+          <div>
+            <table className="min-w-full border-collapse border border-gray-200 text-white mb-8">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 border border-gray-300 bg-gray-100 text-left text-sm font-medium text-gray-700">
+                    Numero de la pantalla
+                  </th>
+                  <th className="px-4 py-2 border border-gray-300 bg-gray-100 text-center text-sm font-medium text-gray-700">
+                    Video en reproduccion
+                  </th>
+                  <th className="px-4 py-2 border border-gray-300 bg-gray-100 text-center text-sm font-medium text-gray-700">
+                    Cantidad de videos de la playlist
+                  </th>
+                  <th className="px-4 py-2 border border-gray-300 bg-gray-100 text-center text-sm font-medium text-gray-700">
+                    Duración total de la playlist
+                  </th>
+                  
+                  <th className="px-4 py-2 border border-gray-300 bg-gray-100 text-center text-sm font-medium text-gray-700">
+                    Acción
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {playlists.map((row) => (
+                  <tr key={row.id} className="">
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700">
+                      {row.id}
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700">
+                      {row.name}
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700">
+                      {row.autor}
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700">
+                      {row.duration}
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700">
+                      <ul className="">
+                        <li>
+                          <button className=" text-stationOrange2 font-medium bold text-md px-2 py-1 hover:text-white">Siguiente</button>
+                        </li>
+                        <li>
+                          <button className=" text-stationOrange2 font-medium bold text-md px-2 py-1 hover:text-white">Pausar</button>
+                        </li>
+                        <li>
+                          <button className=" text-stationOrange2 font-medium bold text-md px-2 py-1 hover:text-white">Anterior</button>
+                        </li>
+                      </ul>                       
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="flex justify-center space-x-4">
+            <button
+              type="button"
+              onClick={closeModal4}
+              className="text-white bg-stationOrange2 font-medium rounded-lg text-md px-5 py-2.5 me-2 mb-2 transition"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
       </>
     );
 }
