@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TvIcon, SquaresPlusIcon, Squares2X2Icon, InformationCircleIcon, FilmIcon } from '@heroicons/react/24/solid'
+import { TvIcon, SquaresPlusIcon, Squares2X2Icon, CheckCircleIcon, FilmIcon } from '@heroicons/react/24/solid'
 import contenido from '../assets/contenido.png'
 const Contenido = (props) => {
   const [screensContent, setScreensContent] = useState([]);
@@ -13,6 +13,7 @@ const Contenido = (props) => {
   }
     // Función para asignar contenido a una pantalla
     const asign1 = () => {
+      openModal5();
       setScreensContent((prev) => {
         const updated = [...prev];
         updated[0] = ids; // Asignar a screen1
@@ -21,6 +22,7 @@ const Contenido = (props) => {
       console.log('Pantalla 1 actualizada:', ids);
     };
     const asign2 = () => {
+      openModal5();
       setScreensContent((prev) => {
         const updated = [...prev];
         updated[1] = ids; // Asignar a screen2
@@ -30,6 +32,7 @@ const Contenido = (props) => {
 
     };
     const asign3 = () => {
+      openModal5();
       setScreensContent((prev) => {
         const updated = [...prev];
         updated[2] = ids; // Asignar a screen3
@@ -38,6 +41,22 @@ const Contenido = (props) => {
       console.log('Pantalla 3 actualizada:', ids);
     };
 console.log(screensContent);
+const pantall1 = [];
+const pantall2 = [];
+const pantall3 = [];
+if(screensContent[0]!=null){
+  pantall1.push(screensContent[0]);
+}
+if(screensContent[1]!=null){
+  pantall2.push(screensContent[1]);
+}
+if(screensContent[2]!=null){
+  pantall3.push(screensContent[2]);
+}
+console.log("pantalla 1 "+pantall1);
+console.log("pantalla 2 "+pantall2);
+console.log("pantalla 3 "+pantall3);
+
 
   //modal1
   const [isOpen1, setIsOpen1] = useState(false);
@@ -53,8 +72,12 @@ console.log(screensContent);
   const closeModal3 = () => setIsOpen3(false);
   //modal4
   const [isOpen4, setIsOpen4] = useState(false);
-  const openModal4 = () => setIsOpen4(true);fetchSelectedVideos();
+  const openModal4 = () => setIsOpen4(true);//fetchSelectedVideos();
   const closeModal4 = () => setIsOpen4(false);
+  //modal de confirmacion 5
+  const [isOpen5, setIsOpen5] = useState(false);
+  const openModal5 = () => setIsOpen5(true);//fetchSelectedVideos();
+  const closeModal5 = () => setIsOpen5(false);
 
   //botones
   const buttons = [
@@ -104,48 +127,7 @@ console.log(screensContent);
     { id: 3, name: 'Videos chidos', autor: 'Alejandro', duration: '5:03', length: '1', created:'07/02/2024' },
   ];  
 
-  //Consulta de API
-  let videos1 =[];
-  let videos2=[];
-  let videos3=[];
 
-  if (screensContent.length==0){
-    for (let i = 0; i < screensContent.length; i++) {
-      if (screensContent[0]!=[]) {
-        videos1='';
-      }
-      for (let j = 0; j < screensContent.length; j++) {
-        
-      }
-    }
-  }
-  const fetchSelectedVideos = async () => {
-
-    if (screensContent.length==0) return; // No hacer nada si el input está vacío
-
-    try {
-      const response = await fetch(
-        `https://api.pexels.com/videos/search?query=${query}&per_page=6&orientation=landscape&min_width=1280`,
-        {
-          headers: {
-            Authorization: apiKey,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Error en la petición");
-      }
-
-      const data = await response.json();
-      console.log(data);
-      
-      setVideos(data.videos); // Guardar los resultados en el estado
-    } catch (error) {
-      console.error("Error al buscar videos:", error);
-    }
-
-  };
     return (
       <>
         <h2 className="text-white font-serif text-xl font-stationFont font-extrabold italic mx-auto my-5 text-center">
@@ -372,9 +354,18 @@ console.log(screensContent);
                 </tr>
               </thead>
               <tbody>
+                <tr>
+                  <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                    <p>1</p>
+                  </td>
+                {screensContent[0] && (
+                  <td></td>
+                )}
+                </tr>
+
                 {playlists.map((row) => (
                   <tr key={row.id} className="">
-                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700">
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
                       {row.id}
                     </td>
                     <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700">
@@ -415,6 +406,28 @@ console.log(screensContent);
           </div>
         </div>
       </div>
+      
+    )}
+      {/* Modal5 */}
+      {isOpen5 && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div className="bg-white p-6 rounded-lg shadow-lg max-w-2xl">
+          <h2 className="text-xl font-bold mb-4 text-stationOrange">
+            Videos agregados exitosamente
+          </h2>
+          <CheckCircleIcon className="size-12 text-gray mx-auto my-4" />
+          <div className="flex justify-center space-x-4">
+            <button
+              type="button"
+              onClick={closeModal5}
+              className="text-white bg-stationOrange2 font-medium rounded-lg text-md px-5 py-2.5 me-2 mb-2 transition"
+            >
+             Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
+      
     )}
       </>
     );
