@@ -31,7 +31,7 @@ const Filtro = () => {
   //Prueba api
   const [query, setQuery] = useState(""); // Estado para el texto del input
   const [videos, setVideos] = useState([]); // Estado para los resultados de la búsqueda
-  const apiKey = "JvXbikst4froBxzCJ2pLi1KrJkYIJ25M6XmzNyDumws2pUaNnolCrPTt"; // Reemplaza con tu clave de API de Pexels
+  const apiKey = "JvXbikst4froBxzCJ2pLi1KrJkYIJ25M6XmzNyDumws2pUaNnolCrPTt"; 
   const [videosSeleccionados, setVideosSeleccionados] = useState([]);
 
   //select de videos
@@ -128,14 +128,14 @@ const Filtro = () => {
           {videos.map((video) => (
             <div 
             key={video.id}
-            className="border rounded overflow-hidden shadow border-2 border-white">
+            className="rounded overflow-hidden shadow border-2 border-white">
               <video
                 controls
                 className="w-full h-auto"
                 src={video.video_files[0]?.link}
               />
-              <p className="text-white">Autor: {video.user.name}</p>
-              <input type="checkbox" className="block mx-auto mb-2 w-6 h-6" id={video.id} onChange={(e) => manejarCambio(video, e.target.checked)}/>
+              <p className="text-white text-center">Titulo: {video.user.name}</p>
+              <input type="checkbox" className="block mx-auto my-2 w-6 h-6" id={video.id} onChange={(e) => manejarCambio(video, e.target.checked)}/>
             </div>
           ))}
         </div>

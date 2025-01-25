@@ -1,62 +1,124 @@
 import React, { useState } from 'react';
 import { TvIcon, SquaresPlusIcon, Squares2X2Icon, CheckCircleIcon, FilmIcon } from '@heroicons/react/24/solid'
 import contenido from '../assets/contenido.png'
+const apiKey = "JvXbikst4froBxzCJ2pLi1KrJkYIJ25M6XmzNyDumws2pUaNnolCrPTt"; 
 const Contenido = (props) => {
   const [screensContent, setScreensContent] = useState([]);
-  
+  //Se obtienen los ids del prop
   let ids = [];
   if (props.videosSeleccionados.length !== 0) {
     for (let i = 0; i < props.videosSeleccionados.length; i++) {
       ids.push(props.videosSeleccionados[i].id);
     }
-    console.log('IDs:', ids);
   }
-    // Función para asignar contenido a una pantalla
-    const asign1 = () => {
-      openModal5();
-      setScreensContent((prev) => {
-        const updated = [...prev];
-        updated[0] = ids; // Asignar a screen1
-        return updated;
-      });
-      console.log('Pantalla 1 actualizada:', ids);
-    };
-    const asign2 = () => {
-      openModal5();
-      setScreensContent((prev) => {
-        const updated = [...prev];
-        updated[1] = ids; // Asignar a screen2
-        return updated;
-      });
-      console.log('Pantalla 2 actualizada:', ids);
+//creacion de variables de apoyo
+const results1 = [];
+const results2 = [];
+const results3 = [];
+//variables de los videos seleccionados por pantalla
+const [pantalla1, setpantalla1]=useState();
+const [pantalla2, setpantalla2]=useState();
+const [pantalla3, setpantalla3]=useState();
+//variable de la duracin de los videos 
+const [totalDuracion1, setTotalDuracion1] = useState();
+const [totalDuracion2, setTotalDuracion2] = useState();
+const [totalDuracion3, setTotalDuracion3] = useState();
 
-    };
-    const asign3 = () => {
-      openModal5();
-      setScreensContent((prev) => {
-        const updated = [...prev];
-        updated[2] = ids; // Asignar a screen3
-        return updated;
+// Función para realizar la petición de los videos seleccionados
+const fetchVideoData = async (id) => {
+  const url = `https://api.pexels.com/videos/videos/${id}`;
+  try {
+      const response = await fetch(url, {
+          headers: {
+              Authorization: apiKey
+          }
       });
-      console.log('Pantalla 3 actualizada:', ids);
-    };
-console.log(screensContent);
-const pantall1 = [];
-const pantall2 = [];
-const pantall3 = [];
-if(screensContent[0]!=null){
-  pantall1.push(screensContent[0]);
-}
-if(screensContent[1]!=null){
-  pantall2.push(screensContent[1]);
-}
-if(screensContent[2]!=null){
-  pantall3.push(screensContent[2]);
-}
-console.log("pantalla 1 "+pantall1);
-console.log("pantalla 2 "+pantall2);
-console.log("pantalla 3 "+pantall3);
+      if (!response.ok) {
+          throw new Error(`Error en la solicitud para ID ${id}: ${response.status}`);
+      }
+      return await response.json();
+  } catch (error) {
+      console.error(`Error al obtener datos para el ID ${id}:`, error.message);
+      return { id, error: error.message }; // Devuelve un objeto con el error para ese ID
+  }
+};
+  //Calculo de la duracion de una playlist manual
+  function playlistDuration (playlist, n){
+    const totalMinutes = playlist.reduce((sum, obj) => sum + obj.duration, 0);
+    const hours = Math.floor(totalMinutes / 60); // Calcula las horas completas
+    const minutes = totalMinutes % 60; // Calcula los minutos restantes
+    if(n==1){
+      setTotalDuracion1(`${hours} h : ${minutes} min`);
+    }else if(n==2){
+      setTotalDuracion2(`${hours} h : ${minutes} min`);
+    }else if(n==3){
+      setTotalDuracion3(`${hours} h : ${minutes} min`);
+    }
+    
+  }
+  // Funciones que retornar datos de videos por pantalla a partir de los ids  
+  const fetchAllData1 = async (ids) => {    
+    for (const id of ids) {
+        const data = await fetchVideoData(id); // Llamada a la API por cada ID
+        results1.push(data); // Guardar los datos en el array
+    }    
+    setpantalla1(results1);
+    playlistDuration (results1,1);
 
+  };
+  const fetchAllData2 = async () => {
+     // Array para almacenar los resultados
+    for (const id of ids) {
+        const data = await fetchVideoData(id); // Llamada a la API por cada ID
+        results2.push(data); // Guardar los datos en el array
+    }
+    setpantalla2(results2);
+    playlistDuration (results2,2);
+  };
+  const fetchAllData3 = async () => {
+     // Array para almacenar los resultados
+    for (const id of ids) {
+        const data = await fetchVideoData(id); // Llamada a la API por cada ID
+        results3.push(data); // Guardar los datos en el array
+    }
+    setpantalla3(results3);
+    playlistDuration (results3,3);
+  };
+
+   // Funciones para asignar los ids a una pantalla
+   const asign1 = () => {
+    openModal5();
+    setScreensContent((prev) => {
+      const updated = [...prev];
+      updated[0] = ids;
+      return updated;
+    });
+    fetchAllData1(ids)
+  };
+  const asign2 = () => {
+    openModal5();
+    setScreensContent((prev) => {
+      const updated = [...prev];
+      updated[1] = ids;
+      return updated;
+    });
+    fetchAllData2(ids)
+  };
+  const asign3 = () => {
+    openModal5();
+    setScreensContent((prev) => {
+      const updated = [...prev];
+      updated[2] = ids;
+      return updated;
+    });
+    fetchAllData3(ids)
+  };
+  //Arreglo de objteros de los videos de cada pantalla
+  console.log("pantalla 1 ", pantalla1);
+  console.log("pantalla 2 ", pantalla2);
+  console.log("pantalla 3 ", pantalla3);
+
+  
 
   //modal1
   const [isOpen1, setIsOpen1] = useState(false);
@@ -342,6 +404,9 @@ console.log("pantalla 3 "+pantall3);
                     Video en reproduccion
                   </th>
                   <th className="px-4 py-2 border border-gray-300 bg-gray-100 text-center text-sm font-medium text-gray-700">
+                    Nombre de la playlist
+                  </th>
+                  <th className="px-4 py-2 border border-gray-300 bg-gray-100 text-center text-sm font-medium text-gray-700">
                     Cantidad de videos de la playlist
                   </th>
                   <th className="px-4 py-2 border border-gray-300 bg-gray-100 text-center text-sm font-medium text-gray-700">
@@ -354,31 +419,29 @@ console.log("pantalla 3 "+pantall3);
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
-                    <p>1</p>
-                  </td>
-                {screensContent[0] && (
-                  <td></td>
-                )}
-                </tr>
-
-                {playlists.map((row) => (
-                  <tr key={row.id} className="">
+                {pantalla1 && (
+                  <tr>
                     <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
-                      {row.id}
+                      <p>1</p>
                     </td>
-                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700">
-                      {row.name}
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                    <img
+                      className="w-full h-auto"
+                      src={pantalla1[0].image}
+                    />
+                    <p className='my-2'>{pantalla1[0].user.name}</p>
                     </td>
-                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700">
-                      {row.autor}
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                      <p>Asignación manual</p>
                     </td>
-                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700">
-                      {row.duration}
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                      <p>{pantalla1.length}</p>
                     </td>
-                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700">
-                      <ul className="">
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                        {totalDuracion1}
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                    <ul className="">
                         <li>
                           <button className=" text-stationOrange2 font-medium bold text-md px-2 py-1 hover:text-white">Siguiente</button>
                         </li>
@@ -388,10 +451,84 @@ console.log("pantalla 3 "+pantall3);
                         <li>
                           <button className=" text-stationOrange2 font-medium bold text-md px-2 py-1 hover:text-white">Anterior</button>
                         </li>
-                      </ul>                       
+                      </ul>       
                     </td>
                   </tr>
-                ))}
+                )}
+
+                {pantalla2 && (
+                  <tr>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                      <p>2</p>
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                    <img
+                      className="w-full h-auto"
+                      src={pantalla2[0].image}
+                    />
+                    <p className='my-2'>{pantalla2[0].user.name}</p>
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                      <p>Asignación manual</p>
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                      <p>{pantalla2.length}</p>
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                        {totalDuracion2}
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                    <ul className="">
+                        <li>
+                          <button className=" text-stationOrange2 font-medium bold text-md px-2 py-1 hover:text-white">Siguiente</button>
+                        </li>
+                        <li>
+                          <button className=" text-stationOrange2 font-medium bold text-md px-2 py-1 hover:text-white">Pausar</button>
+                        </li>
+                        <li>
+                          <button className=" text-stationOrange2 font-medium bold text-md px-2 py-1 hover:text-white">Anterior</button>
+                        </li>
+                      </ul>       
+                    </td>
+                  </tr>
+                )}
+
+                {pantalla3 && (
+                  <tr>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                      <p>3</p>
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                    <img
+                      className="w-full h-auto"
+                      src={pantalla3[0].image}
+                    />
+                    <p className='my-2'>{pantalla3[0].user.name}</p>
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                      <p>Asignación manual</p>
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                      <p>{pantalla3.length}</p>
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                        {totalDuracion3}
+                    </td>
+                    <td className="px-4 py-2 border border-gray-300 text-sm text-gray-700 text-center">
+                    <ul className="">
+                        <li>
+                          <button className=" text-stationOrange2 font-medium bold text-md px-2 py-1 hover:text-white">Siguiente</button>
+                        </li>
+                        <li>
+                          <button className=" text-stationOrange2 font-medium bold text-md px-2 py-1 hover:text-white">Pausar</button>
+                        </li>
+                        <li>
+                          <button className=" text-stationOrange2 font-medium bold text-md px-2 py-1 hover:text-white">Anterior</button>
+                        </li>
+                      </ul>       
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
